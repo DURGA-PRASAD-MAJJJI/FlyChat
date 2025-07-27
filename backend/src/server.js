@@ -34,6 +34,9 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
+app.get("/",(req,res)=>{
+  return res.json({"message":"Success Message"})
+})
 
 // Static frontend in production
 if (process.env.NODE_ENV === "production") {
