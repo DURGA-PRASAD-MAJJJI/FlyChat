@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import serverless from "serverless-http";
 
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
@@ -48,8 +47,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // ✅ For Vercel (serverless)
-export const handler = serverless(app);
-
+export default app;
 // ✅ For local dev
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 5001;
