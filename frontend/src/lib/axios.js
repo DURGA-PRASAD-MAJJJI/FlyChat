@@ -1,10 +1,8 @@
 import axios from "axios";
 
-// const isDev = import.meta.env.MODE === "development";
-
-const BASE_URL="https://fly-chat-be.vercel.app/api";
+const BASE_URL = import.meta.env.MODE === "development" ? "https://fly-chat-be.vercel.app/api" : "https://fly-chat-be.vercel.app/api";
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,
+  withCredentials: true, // send cookies with the request
 });
