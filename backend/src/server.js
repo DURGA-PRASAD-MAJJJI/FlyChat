@@ -15,26 +15,33 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// Connect to DB
 connectDB();
 
-// CORS setup
+// ✅ Allowed origins
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://fly-chat-fe.vercel.app",
+  "http://localhost:5173",             // local frontend
+  "https://fly-chat-fe.vercel.app",    // deployed frontend
 ];
 
+// ✅ CORS middleware
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error("Not allowed by CORS"));
+      if (!origin) return callback(null, true); // allow non-browser tools
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        console.warn("❌ CORS blocked:", origin);
+        return callback(new Error("Not allowed by CORS"));
+      }
     },
     credentials: true,
   })
 );
 
-// Middleware
+// Middlewares
 app.use(express.json());
 app.use(cookieParser());
 
@@ -48,7 +55,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Success Message" });
 });
 
-// Serve frontend in production
+// Serve frontend (only in production)
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
   app.get("*", (req, res) => {
@@ -56,8 +63,13 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// Start server
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+// ✅ For Vercel (export default app)
+export default app;
+
+// ✅ Local development only
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 5001;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
+  });
+}
