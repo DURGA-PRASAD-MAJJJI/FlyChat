@@ -15,26 +15,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-
-// Connect to DB
 connectDB();
 
-// ✅ Allowed origins
+// CORS setup
 const allowedOrigins = [
-  "http://localhost:5173",             
-  "https://fly-chat-fe.vercel.app",    
+  "http://localhost:5173",
+  "https://fly-chat-fe.vercel.app",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        console.warn("❌ CORS blocked:", origin);
-        return callback(new Error("Not allowed by CORS"));
-      }
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
   })
@@ -54,7 +48,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Success Message" });
 });
 
-// Serve frontend (optional if using Vercel for frontend)
+// Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
   app.get("*", (req, res) => {
@@ -62,7 +56,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// ✅ Always listen (even in production, needed for Render)
+// Start server
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
